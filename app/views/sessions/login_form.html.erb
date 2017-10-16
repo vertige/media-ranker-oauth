@@ -3,6 +3,7 @@
   <%= label_tag(:username, "Username") %>
   <%= text_field_tag(:username) %>
   <%= submit_tag("Log In", class: "button") %>
+  <%= link_to "Log In with GitHub", 'auth/github', class: "button" %>
 <% end %>
 
 <article>
