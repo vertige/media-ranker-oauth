@@ -11,9 +11,10 @@ class SessionsController < ApplicationController
       flash[:status] = :success
       flash[:result_text] = "Successfully logged in as existing user #{user.username}"
     else
-      user = User.new(username: username)
+      user = User.new(username: username, uid: find_temp_uid, provider: "MediaRanker")
       if user.save
         session[:user_id] = user.id
+        user.uid = user.id
         flash[:status] = :success
         flash[:result_text] = "Successfully created new user #{user.username} with ID #{user.id}"
       else
@@ -57,5 +58,12 @@ class SessionsController < ApplicationController
     end
 
     redirect_to root_path
+  end
+
+  def find_temp_uid
+    users = User.all - User.where(uid: nil) #in case grandfathered users without IDs
+    sorted_users = users.sort_by {|user| user.uid }
+    temp_id = sorted_users.last.id + 1
+    return temp_id
   end
 end

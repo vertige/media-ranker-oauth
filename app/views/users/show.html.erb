@@ -1,29 +1,57 @@
 <h3>User Summary: <%= link_to @user.username, user_path(@user) %></h3>
 <p>Joined site <%= render_date @user.created_at %></p>
-
-<h4>Votes</h4>
-<table>
-  <thead>
-    <tr>
-      <th>Media Title</th>
-      <th>Created By</th>
-      <th>Published</th>
-      <th>Category</th>
-      <th>Voted On</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @user.votes.each do |vote| %>
+<article class="columns large-6 small-12">
+  <h4>Votes</h4>
+  <table>
+    <thead>
       <tr>
-        <td><%= link_to vote.work.title, work_path(vote.work) %></td>
-        <td><%= vote.work.creator %></td>
-        <td><%= vote.work.publication_year %></td>
-        <td><%= vote.work.category.capitalize %></td>
-        <td><%= render_date vote.created_at %></td>
+        <th>Media Title</th>
+        <th>Created By</th>
+        <th>Published</th>
+        <th>Category</th>
+        <th>Voted On</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @user.votes.each do |vote| %>
+        <tr>
+          <td><%= link_to vote.work.title, work_path(vote.work) %></td>
+          <td><%= vote.work.creator %></td>
+          <td><%= vote.work.publication_year %></td>
+          <td><%= vote.work.category.capitalize %></td>
+          <td><%= render_date vote.created_at %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</article>
+
+
+<article class="columns large-6 small-12">
+  <h4><%= "Works Added by #{@user.username}" %></h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Media Title</th>
+        <th>Created By</th>
+        <th>Published</th>
+        <th>Category</th>
+        <th>Voted On</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @user.works.each do |work| %>
+        <tr>
+          <td><%= link_to work.title, work_path(work.id) %></td>
+          <td><%= work.creator %></td>
+          <td><%= work.publication_year %></td>
+          <td><%= work.category.capitalize %></td>
+          <td><%= render_date work.created_at %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</article>
 
 <%= link_to "See all Users", users_path, class: "button" %>
 <%= link_to "Back to Media List", root_path, class: "button" %>

@@ -5,6 +5,10 @@ class WorksController < ApplicationController
   skip_before_action :find_user, only: [:root]
 
   def root
+    if session[:user_id]
+      @login_user = User.find_by(id: session[:user_id])
+    end
+    
     @albums = Work.best_albums
     @books = Work.best_books
     @movies = Work.best_movies
@@ -40,9 +44,11 @@ class WorksController < ApplicationController
   end
 
   def edit
+    created_by_user?
   end
 
   def update
+    created_by_user?
     @work.update_attributes(media_params)
     if @work.save
       flash[:status] = :success
@@ -57,6 +63,7 @@ class WorksController < ApplicationController
   end
 
   def destroy
+    created_by_user?
     @work.destroy
     flash[:status] = :success
     flash[:result_text] = "Successfully destroyed #{@media_category.singularize} #{@work.id}"
@@ -99,5 +106,14 @@ private
     @work = Work.find_by(id: params[:id])
     render_404 unless @work
     @media_category = @work.category.downcase.pluralize
+  end
+
+  def created_by_user?
+    unless @login_user == @work.user
+      flash[:status] = :failure
+      flash[:result_text] = "Only the user who Created the work may edit or delete it."
+      status = :conflict
+      redirect_to work_path(@work.id) and return
+    end
   end
 end
