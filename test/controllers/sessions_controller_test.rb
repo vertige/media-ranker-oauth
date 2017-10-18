@@ -81,5 +81,19 @@ describe SessionsController do
       must_redirect_to root_path
       session[:user_id].must_equal existing_user.id
     end
-  end
+
+    it "creates an account for a new user and redirects them back to the homepage" do
+      start_count = User.count
+      new_user = User.new(provider: 'github', uid: 1000, username: "Ada Lovelace", email: "ada@adadev.org")
+
+      OmniAuth.config.mock_auth[:github] = OmniAuth::AuthHash.new(mock_auth_hash(new_user))
+
+      get auth_callback_path(:github)
+
+      User.count.must_equal (start_count + 1)
+      must_respond_with :redirect
+      must_redirect_to root_path
+      session[:user_id].must_equal User.find_by(uid: new_user.uid, provider: new_user.provider).id
+    end
+  end #create
 end
