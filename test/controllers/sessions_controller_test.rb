@@ -68,7 +68,7 @@ describe SessionsController do
   end
 
   describe "create" do
-    it "log in an existing user and redirects them back to the homepage" do
+    it "log in an existing user and redirects them" do
       existing_user = users(:dee)
 
       proc {
@@ -79,7 +79,7 @@ describe SessionsController do
       session[:user_id].must_equal existing_user.id
     end
 
-    it "creates an account for a new user and redirects them back to the homepage" do
+    it "creates an account for a new user and redirects them" do
       new_user = User.new(provider: 'github', uid: 1000, username: "Ada Lovelace", email: "ada@adadev.org")
 
       proc {
@@ -88,6 +88,17 @@ describe SessionsController do
 
       must_respond_with :redirect
       session[:user_id].must_equal User.find_by(uid: new_user.uid, provider: new_user.provider).id
+    end
+
+    it "does not create a new user, doesn't login and redirects when not given correct login information" do
+      bologna_user = User.new(provider: 'github', uid: nil, username: "Ada Lovelace", email: "ada@adadev.org")
+
+      proc {
+        oauth_login(bologna_user, :github)
+      }.must_change 'User.count', 0
+
+      must_respond_with :redirect
+      session[:user_id].must_be_nil
     end
   end #create
 end
