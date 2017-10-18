@@ -37,5 +37,13 @@ class ActiveSupport::TestCase
       }
     }
   end
+
+  def oauth_login(user, provider)
+
+    OmniAuth.config.mock_auth[provider] = OmniAuth::AuthHash.new(mock_auth_hash(user))
+
+    get auth_callback_path(provider)
+
+  end
   # Add more helper methods to be used by all tests here...
 end

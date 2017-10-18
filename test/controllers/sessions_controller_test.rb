@@ -69,30 +69,24 @@ describe SessionsController do
 
   describe "create" do
     it "log in an existing user and redirects them back to the homepage" do
-      start_count = User.count
       existing_user = users(:dee)
 
-      OmniAuth.config.mock_auth[:github] = OmniAuth::AuthHash.new(mock_auth_hash(existing_user))
+      proc {
+        oauth_login(existing_user, :github)
+      }.must_change 'User.count', 0
 
-      get auth_callback_path(:github)
-
-      User.count.must_equal start_count
       must_respond_with :redirect
-      must_redirect_to root_path
       session[:user_id].must_equal existing_user.id
     end
 
     it "creates an account for a new user and redirects them back to the homepage" do
-      start_count = User.count
       new_user = User.new(provider: 'github', uid: 1000, username: "Ada Lovelace", email: "ada@adadev.org")
 
-      OmniAuth.config.mock_auth[:github] = OmniAuth::AuthHash.new(mock_auth_hash(new_user))
+      proc {
+        oauth_login(new_user, :github)
+      }.must_change 'User.count', 1
 
-      get auth_callback_path(:github)
-
-      User.count.must_equal (start_count + 1)
       must_respond_with :redirect
-      must_redirect_to root_path
       session[:user_id].must_equal User.find_by(uid: new_user.uid, provider: new_user.provider).id
     end
   end #create
