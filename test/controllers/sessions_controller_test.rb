@@ -91,7 +91,8 @@ describe SessionsController do
     end
 
     it "does not create a new user, doesn't login and redirects when not given correct login information" do
-      bologna_user = User.new(provider: 'github', uid: nil, username: "Ada Lovelace", email: "ada@adadev.org")
+      bologna_user = User.new(provider: 'github', uid: 1000, username: nil, email: "ada@adadev.org")
+      #TODO Ask about uid being nil giving a 500 response
 
       proc {
         oauth_login(bologna_user, :github)
